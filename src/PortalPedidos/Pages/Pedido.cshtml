@@ -1,0 +1,44 @@
+@page
+@model PedidoModel
+@{
+    ViewData["Title"] = "Tu pedido";
+}
+
+<h1>Tu pedido</h1>
+
+@if (Model.Pedido.EstaVacio)
+{
+    <p>Todavía no has añadido ningún producto.</p>
+}
+else
+{
+    <table>
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Cajas</th>
+                <th>Importe</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var linea in Model.Pedido.Lineas)
+            {
+                <tr>
+                    <td>@linea.Producto.Nombre</td>
+                    <td>@linea.Cajas</td>
+                    <td>@linea.Importe.ToString("C")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <p class="total">Total: @Model.Pedido.Importe.ToString("C")</p>
+}
+
+@if (Model.Aviso is not null)
+{
+    <p class="aviso">@Model.Aviso</p>
+}
+
+<form method="post">
+    <button type="submit">Confirmar pedido</button>
+</form>

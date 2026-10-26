@@ -1,0 +1,70 @@
+body {
+    margin: 0;
+    font-family: system-ui, sans-serif;
+    color: #1f2933;
+    background: #f7f7f5;
+}
+
+header {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    padding: 0.8rem 1.5rem;
+    background: #1f4e5f;
+    color: #fff;
+}
+
+header a {
+    color: #fff;
+    text-decoration: none;
+}
+
+header nav {
+    display: flex;
+    gap: 1rem;
+}
+
+.marca {
+    font-weight: 700;
+}
+
+.tienda {
+    margin-left: auto;
+    opacity: 0.8;
+}
+
+main {
+    max-width: 52rem;
+    margin: 1.5rem auto;
+    padding: 0 1rem;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+}
+
+th,
+td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid #e3e3e0;
+    text-align: left;
+}
+
+button {
+    padding: 0.35rem 0.9rem;
+    border: 0;
+    border-radius: 4px;
+    background: #1f4e5f;
+    color: #fff;
+    cursor: pointer;
+}
+
+.total {
+    font-weight: 700;
+}
+
+.aviso {
+    color: #a3261a;
+}

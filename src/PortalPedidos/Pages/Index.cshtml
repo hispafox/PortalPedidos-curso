@@ -1,0 +1,36 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Catálogo";
+}
+
+<h1>Catálogo</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>Producto</th>
+            <th>Formato</th>
+            <th>Precio por caja</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var producto in Model.Productos)
+        {
+            <tr>
+                <td>@producto.Nombre</td>
+                <td>@producto.Formato</td>
+                <td>@producto.PrecioCaja.ToString("C")</td>
+                <td>
+                    <form method="post">
+                        <input type="hidden" name="codigo" value="@producto.Codigo" />
+                        <button type="submit">Añadir</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<p><a asp-page="/Pedido">Ver tu pedido (@Model.CajasEnPedido cajas)</a></p>

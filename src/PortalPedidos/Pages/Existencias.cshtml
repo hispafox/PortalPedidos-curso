@@ -1,0 +1,25 @@
+@page
+@model ExistenciasModel
+@{
+    ViewData["Title"] = "Existencias";
+}
+
+<h1>Existencias</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>Producto</th>
+            <th>Cajas en el almacén</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var producto in Model.Productos)
+        {
+            <tr>
+                <td>@producto.Nombre</td>
+                <td>@Model.CajasDe(producto)</td>
+            </tr>
+        }
+    </tbody>
+</table>

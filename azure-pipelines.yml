@@ -1,0 +1,21 @@
+# Receta de la pipeline del portal: compila y pasa las pruebas en cada subida, en cualquier rama.
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- checkout: self
+  displayName: Descargar el código
+
+- script: dotnet build PortalPedidos.sln --configuration Release
+  displayName: Compilar
+
+- script: dotnet test PortalPedidos.sln --configuration Release --no-build --logger trx --results-directory $(Agent.TempDirectory)/pruebas
+  displayName: Ejecutar las pruebas
+
+- task: PublishTestResults@2
+  displayName: Publicar los resultados de las pruebas
+  condition: succeededOrFailed()
+  inputs:
+    testResultsFormat: VSTest
+    testResultsFiles: '*.trx'
+    searchFolder: $(Agent.TempDirectory)/pruebas
