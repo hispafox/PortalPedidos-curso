@@ -1,0 +1,38 @@
+@page
+@model PortalPedidos.Pages.Almacen.PreparacionModel
+@{
+    ViewData["Title"] = "Aplicación del almacén";
+}
+
+<h1>Lista de preparación</h1>
+<p>Lo que ve el almacén en su aplicación de pedidos. Los del portal llegan solos al confirmarse.</p>
+
+<form method="post" asp-page-handler="CambiarDisponible">
+    <p>
+        La aplicación está <strong>@(Model.Disponible ? "disponible" : "caída")</strong>.
+        Pedidos esperando: @Model.EnEspera.
+        <button type="submit">@(Model.Disponible ? "Simular caída" : "Volver a ponerla en marcha")</button>
+    </p>
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th>Número</th>
+            <th>Tienda</th>
+            <th>Productos</th>
+            <th>Día de reparto</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var pedido in Model.Lista)
+        {
+            <tr>
+                <td>@pedido.Numero</td>
+                <td>@pedido.Tienda</td>
+                <td>@pedido.Lineas</td>
+                <td>@PortalPedidos.Dominio.PlantillaConfirmacion.ConNombre(pedido.DiaReparto)</td>
+            </tr>
+        }
+    </tbody>
+</table>

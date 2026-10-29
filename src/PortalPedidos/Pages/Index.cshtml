@@ -6,31 +6,58 @@
 
 <h1>Catálogo</h1>
 
-<table>
-    <thead>
-        <tr>
-            <th>Producto</th>
-            <th>Formato</th>
-            <th>Precio por caja</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var producto in Model.Productos)
-        {
+<form method="get" class="buscar">
+    <input asp-for="Buscar" placeholder="Busca un producto por su nombre" />
+    <button type="submit">Buscar</button>
+</form>
+
+<nav class="familias">
+    @foreach (var familia in Model.Familias)
+    {
+        <a asp-page="/Index" asp-route-familia="@familia.Id" class="@(familia.Id == Model.Familia && string.IsNullOrWhiteSpace(Model.Buscar) ? "elegida" : "")">@familia.Nombre</a>
+    }
+</nav>
+
+@if (Model.Aviso is not null)
+{
+    <p class="aviso">@Model.Aviso</p>
+}
+
+@if (Model.Productos.Count > 0)
+{
+    <table>
+        <thead>
             <tr>
-                <td>@producto.Nombre</td>
-                <td>@producto.Formato</td>
-                <td>@producto.PrecioCaja.ToString("C")</td>
-                <td>
-                    <form method="post">
-                        <input type="hidden" name="codigo" value="@producto.Codigo" />
-                        <button type="submit">Añadir</button>
-                    </form>
-                </td>
+                <th>Producto</th>
+                <th>Formato</th>
+                <th>Precio por caja</th>
+                <th>Existencias</th>
+                <th>Cajas</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var producto in Model.Productos)
+            {
+                var existencias = Model.Existencias(producto);
+                <tr>
+                    <td>@producto.Nombre</td>
+                    <td>@producto.Formato</td>
+                    <td>@producto.PrecioCaja!.Value.ToString("C")</td>
+                    <td>@(existencias.Agotado ? "Agotado" : $"{existencias.Cajas} cajas")</td>
+                    <td>
+                        <form method="post" asp-page-handler="Anadir" asp-route-familia="@Model.Familia" asp-route-buscar="@Model.Buscar" class="anadir">
+                            <input type="hidden" name="codigo" value="@producto.Codigo" />
+                            <input name="cajas" value="1" size="4" inputmode="numeric" aria-label="Cajas de @producto.Nombre" />
+                            <button type="submit">Añadir</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <p class="nota">@(Model.Existencias(Model.Productos[0]).SonDisponibles
+        ? "Las existencias son las que puedes pedir, descontadas las reservadas para otros pedidos."
+        : "Las existencias son las del cierre de ayer.")</p>
+}
 
 <p><a asp-page="/Pedido">Ver tu pedido (@Model.CajasEnPedido cajas)</a></p>

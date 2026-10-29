@@ -16,9 +16,10 @@
     <tbody>
         @foreach (var producto in Model.Productos)
         {
+            var existencias = Model.Existencias(producto);
             <tr>
                 <td>@producto.Nombre</td>
-                <td>@Model.CajasDe(producto)</td>
+                <td>@(existencias.Agotado ? "Agotado" : existencias.Cajas.ToString())</td>
             </tr>
         }
     </tbody>

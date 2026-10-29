@@ -4,26 +4,58 @@ using PortalPedidos.Dominio;
 
 namespace PortalPedidos.Pages;
 
-public class PedidoModel(Pedido pedido, RegistroPedidos registro) : PageModel
+public class PedidoModel(ServicioPedidos pedidos) : PageModel
 {
-    public Pedido Pedido => pedido;
+    public Pedido Pedido { get; private set; } = null!;
 
-    public string? Aviso { get; private set; }
+    public IReadOnlyList<string> PasanDeLasExistencias { get; private set; } = [];
 
-    public IActionResult OnPost()
+    public decimal FaltaParaElMinimo { get; private set; }
+
+    [TempData]
+    public string? Aviso { get; set; }
+
+    public void OnGet() => Cargar();
+
+    public IActionResult OnPostCambiar(string codigo, string cajas)
     {
-        var resultado = registro.Confirmar(pedido, DateOnly.FromDateTime(DateTime.Today));
+        var resultado = int.TryParse(cajas, out var numero)
+            ? pedidos.CambiarCajas(User.TiendaId(), codigo, numero)
+            : Resultado.Mal("La cantidad tiene que ser un número entero mayor que cero.");
+        if (!resultado.Hecho)
+        {
+            Aviso = resultado.Motivo;
+        }
+
+        return RedirectToPage();
+    }
+
+    public IActionResult OnPostQuitar(string codigo)
+    {
+        pedidos.Quitar(User.TiendaId(), codigo);
+        return RedirectToPage();
+    }
+
+    public IActionResult OnPostConfirmar()
+    {
+        var resultado = pedidos.Confirmar(User.TiendaId(), DateOnly.FromDateTime(DateTime.Today));
         if (!resultado.Confirmado)
         {
             Aviso = resultado.Motivo;
-            return Page();
+            return RedirectToPage();
         }
 
-        pedido.Vaciar();
         return RedirectToPage("/Confirmacion", new
         {
             numero = resultado.Numero,
             dia = resultado.DiaEntrega.ToString("yyyy-MM-dd"),
         });
+    }
+
+    private void Cargar()
+    {
+        Pedido = pedidos.PedidoEnCurso(User.TiendaId());
+        PasanDeLasExistencias = pedidos.PasanDeLasExistencias(Pedido);
+        FaltaParaElMinimo = pedidos.CuantoFaltaParaElMinimo(Pedido);
     }
 }

@@ -68,3 +68,39 @@ button {
 .aviso {
     color: #a3261a;
 }
+
+.nota {
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+header form {
+    margin: 0;
+}
+
+.familias {
+    display: flex;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.familias .elegida {
+    font-weight: 700;
+}
+
+.buscar,
+.anadir {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.anadir {
+    margin: 0;
+}
+
+.entrar {
+    display: grid;
+    gap: 0.75rem;
+    max-width: 20rem;
+}

@@ -1,0 +1,81 @@
+@page
+@model HistorialModel
+@{
+    ViewData["Title"] = "Tus pedidos";
+}
+
+<h1>Tus pedidos</h1>
+
+@if (Model.Aviso is not null)
+{
+    <p class="aviso">@Model.Aviso</p>
+    @if (Model.PreguntarPorSustituir is int numero)
+    {
+        <form method="post" asp-page-handler="Repetir">
+            <input type="hidden" name="numero" value="@numero" />
+            <input type="hidden" name="sustituir" value="true" />
+            <button type="submit">Sí, sustituirlo</button>
+            <a asp-page="/Pedido">No, ver el que tengo</a>
+        </form>
+    }
+}
+
+@if (Model.Pedidos.Count == 0)
+{
+    <p>Todavía no has confirmado ningún pedido.</p>
+}
+else
+{
+    <table>
+        <thead>
+            <tr>
+                <th>Número</th>
+                <th>Fecha</th>
+                <th>Total</th>
+                <th>Estado</th>
+                <th>Llega el</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var pedido in Model.Pedidos)
+            {
+                <tr>
+                    <td><a asp-page="/Historial" asp-route-numero="@pedido.Numero">@pedido.Numero</a></td>
+                    <td>@pedido.FechaConfirmacion?.ToString("dd-MM-yyyy")</td>
+                    <td>@pedido.TotalCajas cajas</td>
+                    <td>@HistorialModel.NombreDe(pedido.Estado)</td>
+                    <td>@(pedido.DiaEntrega is DateOnly dia ? PortalPedidos.Dominio.PlantillaConfirmacion.ConNombre(dia) : "")</td>
+                    <td>
+                        <form method="post" asp-page-handler="Repetir">
+                            <input type="hidden" name="numero" value="@pedido.Numero" />
+                            <button type="submit">Repetir</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@if (Model.Abierto is not null)
+{
+    <h2>Pedido @Model.Abierto.Numero</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Cajas</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var linea in Model.Abierto.LineasEnOrden)
+            {
+                <tr>
+                    <td>@linea.Producto.Nombre</td>
+                    <td>@linea.Cajas</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

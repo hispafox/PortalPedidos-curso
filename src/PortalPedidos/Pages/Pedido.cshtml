@@ -6,6 +6,11 @@
 
 <h1>Tu pedido</h1>
 
+@if (Model.Aviso is not null)
+{
+    <p class="aviso">@Model.Aviso</p>
+}
+
 @if (Model.Pedido.EstaVacio)
 {
     <p>Todavía no has añadido ningún producto.</p>
@@ -18,27 +23,51 @@ else
                 <th>Producto</th>
                 <th>Cajas</th>
                 <th>Importe</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var linea in Model.Pedido.Lineas)
+            @foreach (var linea in Model.Pedido.LineasEnOrden)
             {
                 <tr>
-                    <td>@linea.Producto.Nombre</td>
-                    <td>@linea.Cajas</td>
+                    <td>
+                        @linea.Producto.Nombre
+                        @if (Model.PasanDeLasExistencias.Contains(linea.CodigoProducto))
+                        {
+                            <span class="aviso">· pides más cajas de las que hay</span>
+                        }
+                    </td>
+                    <td>
+                        <form method="post" asp-page-handler="Cambiar" class="anadir">
+                            <input type="hidden" name="codigo" value="@linea.CodigoProducto" />
+                            <input name="cajas" value="@linea.Cajas" size="4" inputmode="numeric" aria-label="Cajas de @linea.Producto.Nombre" />
+                            <button type="submit">Cambiar</button>
+                        </form>
+                    </td>
                     <td>@linea.Importe.ToString("C")</td>
+                    <td>
+                        <form method="post" asp-page-handler="Quitar">
+                            <input type="hidden" name="codigo" value="@linea.CodigoProducto" />
+                            <button type="submit">Quitar</button>
+                        </form>
+                    </td>
                 </tr>
             }
         </tbody>
     </table>
-    <p class="total">Total: @Model.Pedido.Importe.ToString("C")</p>
+    <p class="total">Total: @Model.Pedido.TotalCajas cajas · @Model.Pedido.Importe.ToString("C")</p>
+    @if (Model.PasanDeLasExistencias.Count > 0)
+    {
+        <p class="aviso">Hay productos de los que pides más cajas de las que hay. Puedes confirmar igualmente.</p>
+    }
+    @if (Model.FaltaParaElMinimo > 0)
+    {
+        <p class="aviso">El pedido no llega al mínimo. Faltan @Model.FaltaParaElMinimo.ToString("C").</p>
+    }
 }
 
-@if (Model.Aviso is not null)
-{
-    <p class="aviso">@Model.Aviso</p>
-}
-
-<form method="post">
+<form method="post" asp-page-handler="Confirmar">
     <button type="submit">Confirmar pedido</button>
 </form>
+
+<p><a asp-page="/Index">Seguir eligiendo productos</a></p>

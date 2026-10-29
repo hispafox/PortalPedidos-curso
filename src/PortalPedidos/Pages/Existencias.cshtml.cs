@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using PortalPedidos.Datos;
 using PortalPedidos.Dominio;
 
 namespace PortalPedidos.Pages;
 
-public class ExistenciasModel(ConsultaExistencias consulta) : PageModel
+public class ExistenciasModel(Catalogo catalogo, PortalContexto datos) : PageModel
 {
-    public IReadOnlyList<Producto> Productos => Catalogo.Productos;
+    public IReadOnlyList<Producto> Productos =>
+        datos.Productos.AsEnumerable().Where(p => p.SeVende).OrderBy(p => p.Nombre).ToList();
 
-    public int CajasDe(Producto producto) => consulta.CajasDe(producto.Codigo);
+    public ExistenciasDe Existencias(Producto producto) => catalogo.Existencias(producto);
 }

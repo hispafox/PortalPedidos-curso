@@ -1,0 +1,70 @@
+@page
+@model PortalPedidos.Pages.Almacen.IndexModel
+@{
+    ViewData["Title"] = "Pedidos nuevos";
+}
+
+<h1>Pedidos nuevos</h1>
+
+@if (Model.Aviso is not null)
+{
+    <p class="aviso">@Model.Aviso</p>
+}
+
+@if (Model.Nuevos.Count == 0)
+{
+    <p>No hay pedidos nuevos.</p>
+}
+else
+{
+    <table>
+        <thead>
+            <tr>
+                <th>Número</th>
+                <th>Tienda</th>
+                <th>Fecha</th>
+                <th>Llega el</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var pedido in Model.Nuevos)
+            {
+                <tr>
+                    <td><a asp-page="/Almacen/Index" asp-route-numero="@pedido.Numero">@pedido.Numero</a></td>
+                    <td>@pedido.Tienda.Nombre</td>
+                    <td>@pedido.FechaConfirmacion?.ToString("dd-MM-yyyy")</td>
+                    <td>@(pedido.DiaEntrega is DateOnly dia ? PortalPedidos.Dominio.PlantillaConfirmacion.ConNombre(dia) : "")</td>
+                    <td>
+                        <form method="post" asp-page-handler="Preparado">
+                            <input type="hidden" name="numero" value="@pedido.Numero" />
+                            <button type="submit">Preparado</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@if (Model.Abierto is not null)
+{
+    <h2>Pedido @Model.Abierto.Numero · @Model.Abierto.Tienda.Nombre</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Cajas</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var linea in Model.Abierto.LineasEnOrden)
+            {
+                <tr>
+                    <td>@linea.Producto.Nombre</td>
+                    <td>@linea.Cajas</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

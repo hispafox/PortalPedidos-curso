@@ -1,0 +1,18 @@
+@page
+@model EntrarModel
+@{
+    ViewData["Title"] = "Entrar";
+}
+
+<h1>Entrar en el portal</h1>
+
+<form method="post" class="entrar">
+    <label>Usuario <input asp-for="Usuario" autocomplete="username" /></label>
+    <label>Contraseña <input asp-for="Contrasena" type="password" autocomplete="current-password" /></label>
+    <button type="submit">Entrar</button>
+</form>
+
+@if (Model.Aviso is not null)
+{
+    <p class="aviso">@Model.Aviso</p>
+}

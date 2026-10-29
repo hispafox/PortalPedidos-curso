@@ -8,13 +8,28 @@
 </head>
 <body>
     <header>
-        <a class="marca" asp-page="/Index">Portal de pedidos</a>
+        <a class="marca" href="/">Portal de pedidos</a>
         <nav>
-            <a asp-page="/Index">Catálogo</a>
-            <a asp-page="/Pedido">Tu pedido</a>
-            <a asp-page="/Existencias">Existencias</a>
+            @if (User.IsInRole("Tienda"))
+            {
+                <a asp-page="/Index">Catálogo</a>
+                <a asp-page="/Pedido">Tu pedido</a>
+                <a asp-page="/Historial">Tus pedidos</a>
+                <a asp-page="/Existencias">Existencias</a>
+            }
+            @if (User.IsInRole("Almacen"))
+            {
+                <a asp-page="/Almacen/Index">Pedidos nuevos</a>
+                <a asp-page="/Almacen/Preparacion">Aplicación del almacén</a>
+            }
         </nav>
-        <span class="tienda">Tienda de pruebas</span>
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <span class="tienda">@User.NombreTienda()</span>
+            <form method="post" asp-page="/Salir">
+                <button type="submit">Salir</button>
+            </form>
+        }
     </header>
     <main>
         @RenderBody()
